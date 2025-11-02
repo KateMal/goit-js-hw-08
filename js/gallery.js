@@ -64,35 +64,42 @@ const images = [
   },
 ];
 
+// const basicLightbox = require("basiclightbox");
+
+// const imageInstance = basicLightbox.create(document.querySelector("#image"));
+
 const galleryEl = document.querySelector(".gallery");
 
 const markup = images
   .map(
-    (image) =>
-      `<li><img src="${image.preview}" alt="${image.description}" width="320"></li>`
+    ({ description, preview, original }) =>
+      // `<li><img src="${image.preview}" alt="${image.description}" width="320"></li>`
+      `<li class="gallery-item">
+  <a class="gallery-link" href="${original}">
+    <img
+      class="gallery-image"
+      src="${preview}"
+      data-source="${original}"
+      alt="${description}"
+    />
+  </a>
+</li>
+`
   )
   .join("");
 
 galleryEl.insertAdjacentHTML("beforeend", markup);
 
-function showModal() {
-  document.body.classList.add("show-modal");
-}
-
-function closeModal() {
-  document.body.classList.remove("show-modal");
-}
-
 galleryEl.addEventListener("click", (e) => {
-  console.log("showModal");
+  e.preventDefault();
   const imgEl = e.target.closest("img");
-  console.log(imgEl);
-
-  showModal();
-});
-
-const modalEl = document.querySelector(".modal");
-modalEl.addEventListener("click", (e) => {
-  console.log("closeModal");
-  closeModal();
+  if (!imgEl) {
+    return;
+  }
+  const originalImage = imgEl.getAttribute("data-source");
+  const altText = imgEl.getAttribute("alt");
+  const instance = basicLightbox.create(`
+    <img class="modal-img" src="${originalImage}" alt="${altText}" />
+`);
+  instance.show();
 });
